@@ -1,0 +1,18 @@
+name = "cv-community"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Created by:  wrangler kv namespace create KNOWN   -> paste the id below
+[[kv_namespaces]]
+binding = "KNOWN"
+id = "PASTE_KV_NAMESPACE_ID_HERE"
+
+[vars]
+REPO = "cursorvoice/community"
+ALLOW_ORIGIN = "https://community.cursorvoice.app"
+# Comma-separated allowed token audiences: the Web client id (site) AND the
+# Desktop client id the app uses. Both belong to the same Google project.
+GOOGLE_AUDS = "WEB_CLIENT_ID.apps.googleusercontent.com,DESKTOP_CLIENT_ID.apps.googleusercontent.com"
+
+# GITHUB_TOKEN is a SECRET — never put it here. Set it with:
+#   wrangler secret put GITHUB_TOKEN

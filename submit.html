@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href="https://community.cursorvoice.app/submit.html" />
+<link rel="icon" type="image/png" href="https://cursorvoice.app/favicon-32.png" />
+<title>Submit a plugin · Cursor Voice</title>
+<meta name="description" content="Publish a plugin to the Cursor Voice marketplace." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<div class="field" aria-hidden="true"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="https://cursorvoice.app"><span class="mark"></span> Cursor Voice</a>
+    <div class="nav-links">
+      <a href="index.html">Browse</a>
+      <a href="how.html">How it works</a>
+      <a href="submit.html" class="active">Submit</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Publish</div>
+    <h1>Share a <span class="grad">plugin</span></h1>
+    <p class="sub">Build the manifest right here. Sign in with the same account you use in the app, and submit it for review.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="panel">
+    <!-- sign-in gate (shown when backend login is configured) -->
+    <div id="gate" class="gate" style="display:none">
+      <p>Sign in with the Google account you use in Cursor Voice to publish a plugin.</p>
+      <div id="gbtn" style="display:flex;justify-content:center"></div>
+      <p class="hint" style="margin-top:14px">We only read your name and email to credit and verify the submission.</p>
+    </div>
+
+    <!-- identity chip when signed in -->
+    <div id="who" class="who" style="display:none">
+      <div class="av"></div>
+      <div style="flex:1"><div class="nm" id="whoName"></div><div class="em" id="whoEmail"></div></div>
+      <button class="mini" onclick="signOut()">Sign out</button>
+    </div>
+
+    <div id="status"></div>
+
+    <!-- the form -->
+    <div id="form">
+      <div class="f">
+        <label>Plugin name</label>
+        <input id="m_name" placeholder="search wikipedia" oninput="build()" />
+        <div class="hint">Exposed to the assistant as <code id="m_id">plugin_…</code></div>
+      </div>
+      <div class="f">
+        <label>What it does</label>
+        <input id="m_desc" placeholder="Open a Wikipedia search for a topic in the browser." oninput="build()" />
+        <div class="hint">One line — how the assistant knows when to use it.</div>
+      </div>
+      <div class="f-row">
+        <div class="f">
+          <label>Action</label>
+          <select id="m_type" onchange="build()">
+            <option value="open_url">Open a URL</option>
+            <option value="shell">Run a shell command</option>
+            <option value="applescript">Run AppleScript</option>
+          </select>
+        </div>
+        <div class="f">
+          <label>Arguments <span class="opt">(optional)</span></label>
+          <input id="m_args" placeholder="topic, count" oninput="build()" />
+        </div>
+      </div>
+      <div class="f">
+        <label id="m_tpl_label">URL template</label>
+        <input id="m_tpl" placeholder="https://en.wikipedia.org/w/index.php?search={{topic}}" oninput="build()" />
+        <div class="hint">Use <code>{{argument}}</code> placeholders for each argument.</div>
+      </div>
+      <div class="f">
+        <label>Link <span class="opt">(optional)</span></label>
+        <input id="m_link" placeholder="github.com/you" oninput="build()" />
+      </div>
+
+      <div class="preview" id="m_preview"></div>
+
+      <div class="cta-row" style="justify-content:flex-start">
+        <button class="btn ghost" onclick="copyManifest()" id="m_copy">Copy manifest</button>
+        <button class="btn" id="m_submit" onclick="submit()">Submit for review →</button>
+      </div>
+      <p class="hint" style="margin-top:16px;text-align:center">Plugins run with your permissions — keep them transparent and safe.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Open source under the MIT license · <a href="https://cursorvoice.app">cursorvoice.app</a> · <a href="https://github.com/cursorvoice/community" target="_blank" rel="noopener">GitHub</a></p>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const CFG = window.CV || {};
+  const BACKEND = !!(CFG.API_BASE && CFG.GOOGLE_CLIENT_ID);
+  let idToken = null, identity = null;
+
+  // ---------- manifest builder ----------
+  function slug(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
+  function buildManifest(){
+    const name=$('m_name').value.trim(), desc=$('m_desc').value.trim(),
+          type=$('m_type').value, tpl=$('m_tpl').value.trim();
+    const args=$('m_args').value.split(',').map(slug).filter(Boolean);
+    const props={}; args.forEach(a=>props[a]={type:'string'});
+    return { manifest:{ name:name||'my plugin', description:desc||'What this plugin does.',
+      parameters:{type:'object',properties:props,...(args.length?{required:args}:{})},
+      run:{type,template:tpl||''} }, name, desc, type, link:$('m_link').value.trim() };
+  }
+  function build(){
+    const {manifest,name}=buildManifest();
+    $('m_id').textContent='plugin_'+(slug(name)||'…');
+    $('m_tpl_label').textContent={open_url:'URL template',shell:'Shell command',applescript:'AppleScript'}[$('m_type').value];
+    $('m_preview').textContent=JSON.stringify(manifest,null,2);
+  }
+  function copyManifest(){ const {manifest}=buildManifest(); navigator.clipboard.writeText(JSON.stringify(manifest,null,2));
+    const b=$('m_copy'),o=b.textContent; b.textContent='Copied ✓'; setTimeout(()=>b.textContent=o,1500); }
+  build();
+
+  function banner(cls,msg){ $('status').innerHTML = '<div class="banner '+cls+'">'+msg+'</div>'; }
+
+  // ---------- submit ----------
+  function submit(){
+    const {manifest,name,desc,type,link}=buildManifest();
+    if(!name||!desc||!manifest.run.template){ banner('warn','Add a name, a description, and the '+(type==='open_url'?'URL':type)+' template first.'); return; }
+    if(BACKEND){
+      if(!idToken){ banner('warn','Please sign in first.'); return; }
+      $('m_submit').disabled=true; $('m_submit').textContent='Submitting…';
+      fetch(CFG.API_BASE.replace(/\/$/,'')+'/submit',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({idToken,manifest,link})})
+        .then(async r=>{ const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||('HTTP '+r.status)); return d; })
+        .then(d=>{ banner('ok','✓ Submitted! Track it here: <a href="'+d.url+'" target="_blank" rel="noopener">'+d.url+'</a>'); })
+        .catch(e=>banner('warn','Submit failed: '+e.message))
+        .finally(()=>{ $('m_submit').disabled=false; $('m_submit').textContent='Submit for review →'; });
+    } else {
+      // Fallback: open a pre-filled GitHub issue (no backend configured yet).
+      const body=`**Plugin:** ${name}\n**Link:** ${link||'—'}\n**Type:** ${type}\n\nManifest:\n\`\`\`json\n${JSON.stringify(manifest,null,2)}\n\`\`\`\n\n_Submitted via community.cursorvoice.app_`;
+      const url=`https://github.com/${CFG.REPO||'cursorvoice/community'}/issues/new?title=${encodeURIComponent('[plugin] '+name)}&labels=${encodeURIComponent('plugin-submission')}&body=${encodeURIComponent(body)}`;
+      window.open(url,'_blank','noopener');
+    }
+  }
+
+  // ---------- auth (only when backend configured) ----------
+  function decodeJwt(t){ try{ return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); }catch{ return {}; } }
+
+  function onCredential(resp){
+    idToken = resp.credential; identity = decodeJwt(idToken);
+    fetch(CFG.API_BASE.replace(/\/$/,'')+'/me',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({idToken})})
+      .then(async r=>{ const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||'verify failed'); return d; })
+      .then(d=>{
+        showWho();
+        if(d.known){ banner('ok','Verified — this account is connected to Cursor Voice. You can publish.'); enableForm(true); }
+        else { banner('warn','This Google account isn’t connected to the app yet. Open Cursor Voice and sign in with <b>'+(identity.email||'this account')+'</b>, then refresh.'); enableForm(false); }
+      })
+      .catch(e=>{ showWho(); banner('warn','Couldn’t verify your account: '+e.message); enableForm(false); });
+  }
+
+  function showWho(){ $('gate').style.display='none'; $('who').style.display='flex';
+    $('whoName').textContent=identity.name||'Signed in'; $('whoEmail').textContent=identity.email||''; }
+  function enableForm(ok){ $('m_submit').disabled=!ok; }
+  function signOut(){ idToken=null; identity=null; if(window.google) google.accounts.id.disableAutoSelect();
+    $('who').style.display='none'; $('gate').style.display='block'; $('status').innerHTML=''; enableForm(false); initGoogle(); }
+
+  function initGoogle(){
+    if(!window.google||!google.accounts){ setTimeout(initGoogle,300); return; }
+    google.accounts.id.initialize({ client_id: CFG.GOOGLE_CLIENT_ID, callback: onCredential });
+    google.accounts.id.renderButton($('gbtn'), {theme:'filled_black',size:'large',shape:'pill',text:'signin_with'});
+  }
+
+  // ---------- mode ----------
+  if(BACKEND){
+    $('gate').style.display='block';
+    enableForm(false);
+    initGoogle();
+  } // else: open form, no gate, fallback submit (default state)
+</script>
+</body>
+</html>

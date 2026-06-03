@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href="https://community.cursorvoice.app/how.html" />
+<link rel="icon" type="image/png" href="https://cursorvoice.app/favicon-32.png" />
+<title>How plugins work · Cursor Voice</title>
+<meta name="description" content="How Cursor Voice plugins work — a JSON manifest becomes a voice command." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="field" aria-hidden="true"></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="https://cursorvoice.app"><span class="mark"></span> Cursor Voice</a>
+    <div class="nav-links">
+      <a href="index.html">Browse</a>
+      <a href="how.html" class="active">How it works</a>
+      <a href="submit.html">Submit</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h1>One file. <span class="grad">One command.</span></h1>
+    <p class="sub">A plugin is a small JSON manifest. Cursor Voice turns each one into a tool the assistant can call by voice.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="block">
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h4>Describe a tool</h4>
+        <p>A name, a one-line description (so the model knows when to use it), its arguments, and an action.</p></div>
+      <div class="step"><div class="n">2</div><h4>Drop it in</h4>
+        <p>Save it to your plugins folder, or click <strong style="color:var(--fg)">Install in app</strong> on any plugin.</p></div>
+      <div class="step"><div class="n">3</div><h4>Just say it</h4>
+        <p>The assistant can now call your tool by voice — exposed as <code>plugin_&lt;name&gt;</code>.</p></div>
+    </div>
+  </section>
+
+  <section class="block" style="margin-top:54px">
+    <h2>Where plugins live</h2>
+    <pre><code>~/Library/Application Support/CursorVoice/plugins/</code></pre>
+    <p class="muted">Every <code>.json</code> in that folder becomes a tool. The <strong style="color:var(--fg)">Install in app</strong> button drops it there for you.</p>
+  </section>
+
+  <section class="block" style="margin-top:44px">
+    <h2>Manifest format</h2>
+    <pre><code>{
+  "name": "search wikipedia",
+  "description": "Open a Wikipedia search for a topic in the browser.",
+  "parameters": {
+    "type": "object",
+    "properties": { "topic": { "type": "string" } },
+    "required": ["topic"]
+  },
+  "run": {
+    "type": "open_url",
+    "template": "https://en.wikipedia.org/w/index.php?search={{topic}}"
+  }
+}</code></pre>
+    <p class="muted">Then say <em>“search Wikipedia for the Eiffel Tower.”</em> Run types:</p>
+    <div class="steps" style="margin-top:18px">
+      <div class="step"><h4><code>open_url</code></h4><p>Opens a URL. Arguments are URL-encoded.</p></div>
+      <div class="step"><h4><code>shell</code></h4><p>Runs a zsh command. Args are shell-quoted; the destructive-command guard and Dry-run still apply.</p></div>
+      <div class="step"><h4><code>applescript</code></h4><p>Runs AppleScript. Args are escaped.</p></div>
+    </div>
+    <div class="banner warn" style="margin-top:24px">⚠️ Plugins run with your permissions. Only install ones you trust — review the <code>run</code> action first.</div>
+    <div class="cta-row" style="justify-content:flex-start;margin-top:26px">
+      <a class="btn" href="submit.html">Publish your plugin</a>
+      <a class="btn ghost" href="index.html">Browse the marketplace</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Open source under the MIT license · <a href="https://cursorvoice.app">cursorvoice.app</a> · <a href="https://github.com/cursorvoice/community" target="_blank" rel="noopener">GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>

@@ -42,10 +42,14 @@ the assistant can call (exposed as `plugin_<name>`).
 
 ## Submit your plugin
 
-**Easiest — from the site:** open the **Submit** form at
-[community.cursorvoice.app](https://community.cursorvoice.app). It builds the
-manifest as you type and opens a pre-filled submission — one click to publish for
-review. (You can also [open a submission issue directly](https://github.com/cursorvoice/community/issues/new?template=plugin-submission.yml).)
+**Easiest — from the site:** open the **[Submit](https://community.cursorvoice.app/submit.html)**
+page. It builds the manifest as you type. Sign in with the same Google account you
+use in the app and publish it for review in one click. (You can also
+[open a submission issue directly](https://github.com/cursorvoice/community/issues/new?template=plugin-submission.yml).)
+
+The site's login + verified submissions are powered by a small free Cloudflare
+Worker — see [`backend/`](backend) for the deploy runbook. Until it's configured,
+the Submit page falls back to the pre-filled GitHub-issue flow.
 
 Approved submissions are added to [`plugins/`](plugins) and `registry.json`, and
 appear on the site automatically.
