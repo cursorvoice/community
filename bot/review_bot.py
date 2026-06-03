@@ -118,7 +118,13 @@ async def on_ready():
         print(f"Identity set: {BOT_NAME}")
     except Exception as e:
         print("identity update skipped:", e)
-    # Register slash commands. Sync to the channel's guild for instant availability.
+    # Start polling for submissions immediately — must NOT be blocked by the
+    # slash-command sync (which can stall if the bot wasn't invited with the
+    # applications.commands scope). Run both as independent background tasks.
+    bot.loop.create_task(poll_loop())
+    bot.loop.create_task(sync_commands())
+
+async def sync_commands():
     try:
         ch = bot.get_channel(CHANNEL_ID)
         if ch is not None and getattr(ch, "guild", None) is not None:
@@ -126,10 +132,10 @@ async def on_ready():
             cmds = await tree.sync(guild=ch.guild)
         else:
             cmds = await tree.sync()
-        print(f"Slash commands synced: {[c.name for c in cmds]}")
+        print(f"Slash commands synced: {[c.name for c in cmds]}", flush=True)
     except Exception as e:
-        print("slash sync failed:", e)
-    bot.loop.create_task(poll_loop())
+        print("slash sync failed (re-invite the bot with the applications.commands "
+              f"scope, then restart): {e}", flush=True)
 
 @bot.event
 async def on_raw_reaction_add(payload):
