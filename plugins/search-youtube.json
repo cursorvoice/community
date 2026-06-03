@@ -1,0 +1,19 @@
+{
+  "name": "search youtube",
+  "description": "Search YouTube for a query.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "query"
+    ]
+  },
+  "run": {
+    "type": "open_url",
+    "template": "https://www.youtube.com/results?search_query={{query}}"
+  }
+}
