@@ -1,9 +1,51 @@
 [
   {
+    "name": "search youtube",
+    "file": "plugins/youtube.json",
+    "type": "open_url",
+    "description": "Search YouTube for videos matching a query.",
+    "author": "cursorvoice"
+  },
+  {
+    "name": "search github",
+    "file": "plugins/github-search.json",
+    "type": "open_url",
+    "description": "Search GitHub repositories and code for a query.",
+    "author": "cursorvoice"
+  },
+  {
     "name": "search wikipedia",
     "file": "plugins/wikipedia.json",
     "type": "open_url",
     "description": "Open a Wikipedia search for a topic in the browser.",
+    "author": "cursorvoice"
+  },
+  {
+    "name": "define word",
+    "file": "plugins/define.json",
+    "type": "open_url",
+    "description": "Look up the definition of a word.",
+    "author": "cursorvoice"
+  },
+  {
+    "name": "translate text",
+    "file": "plugins/translate.json",
+    "type": "open_url",
+    "description": "Translate text to English (auto-detects the source language).",
+    "author": "cursorvoice"
+  },
+  {
+    "name": "search maps",
+    "file": "plugins/maps.json",
+    "type": "open_url",
+    "description": "Find a place or address on the map.",
+    "author": "cursorvoice"
+  },
+  {
+    "name": "search stack overflow",
+    "file": "plugins/stackoverflow.json",
+    "type": "open_url",
+    "description": "Search Stack Overflow for a programming question.",
     "author": "cursorvoice"
   },
   {
@@ -14,17 +56,10 @@
     "author": "cursorvoice"
   },
   {
-    "name": "new finder window",
-    "file": "plugins/new-finder-tab.json",
-    "type": "applescript",
-    "description": "Open a Finder window at a given folder path.",
+    "name": "sleep display",
+    "file": "plugins/lock-screen.json",
+    "type": "shell",
+    "description": "Put the Mac's display to sleep (locks the screen if a password is required on wake).",
     "author": "cursorvoice"
-  },
-  {
-    "name": "search youtube",
-    "file": "plugins/search-youtube.json",
-    "type": "open_url",
-    "description": "Search YouTube for a query.",
-    "author": "Abde_rrahmane"
   }
 ]

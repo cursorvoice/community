@@ -104,11 +104,28 @@
         <p>${esc(p.description)}</p>
         <p class="by">by ${esc(p.author||'anonymous')}</p>
         <div class="actions">
-          <a class="mini primary" href="${deep}" title="Open in Cursor Voice and install">⤓ Install in app</a>
+          <button class="mini primary" data-deep="${deep}" onclick="install(this)" title="Open in Cursor Voice and install">⤓ Install in app</button>
           <button class="mini" data-file="${esc(p.file)}" data-name="${esc(p.name||'plugin')}" onclick="dl(this)">Download</button>
           <button class="mini" data-file="${esc(p.file)}" onclick="copyManifest(this)">Copy</button>
         </div>
       </div>`; }).join('');
+  }
+
+  function install(btn){
+    // Fire the deep link without navigating the page away (custom scheme).
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = btn.dataset.deep;
+    document.body.appendChild(iframe);
+    setTimeout(() => iframe.remove(), 1500);
+    // Optimistic feedback — the app shows its own confirm dialog before installing.
+    btn.textContent = '✓ Opening Cursor Voice…';
+    btn.classList.add('done');
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = '✓ Sent to app';
+      setTimeout(() => { btn.textContent = '⤓ Install in app'; btn.classList.remove('done'); btn.disabled = false; }, 3500);
+    }, 1400);
   }
 
   function dl(btn){

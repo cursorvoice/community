@@ -1,0 +1,6 @@
+{
+  "name": "translate text",
+  "description": "Translate text to English (auto-detects the source language).",
+  "parameters": { "type": "object", "properties": { "text": { "type": "string" } }, "required": ["text"] },
+  "run": { "type": "open_url", "template": "https://translate.google.com/?sl=auto&tl=en&op=translate&text={{text}}" }
+}

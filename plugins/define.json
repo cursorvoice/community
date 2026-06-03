@@ -1,0 +1,6 @@
+{
+  "name": "define word",
+  "description": "Look up the definition of a word.",
+  "parameters": { "type": "object", "properties": { "word": { "type": "string" } }, "required": ["word"] },
+  "run": { "type": "open_url", "template": "https://www.google.com/search?q=define+{{word}}" }
+}

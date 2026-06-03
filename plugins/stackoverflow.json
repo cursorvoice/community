@@ -1,0 +1,6 @@
+{
+  "name": "search stack overflow",
+  "description": "Search Stack Overflow for a programming question.",
+  "parameters": { "type": "object", "properties": { "query": { "type": "string" } }, "required": ["query"] },
+  "run": { "type": "open_url", "template": "https://stackoverflow.com/search?q={{query}}" }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "sleep display",
+  "description": "Put the Mac's display to sleep (locks the screen if a password is required on wake).",
+  "parameters": { "type": "object", "properties": {} },
+  "run": { "type": "shell", "template": "pmset displaysleepnow" }
+}

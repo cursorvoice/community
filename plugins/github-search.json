@@ -1,0 +1,6 @@
+{
+  "name": "search github",
+  "description": "Search GitHub repositories and code for a query.",
+  "parameters": { "type": "object", "properties": { "query": { "type": "string" } }, "required": ["query"] },
+  "run": { "type": "open_url", "template": "https://github.com/search?q={{query}}&type=repositories" }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "search maps",
+  "description": "Find a place or address on the map.",
+  "parameters": { "type": "object", "properties": { "place": { "type": "string" } }, "required": ["place"] },
+  "run": { "type": "open_url", "template": "https://www.google.com/maps/search/{{place}}" }
+}
