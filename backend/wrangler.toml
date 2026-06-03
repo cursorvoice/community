@@ -12,14 +12,14 @@ custom_domain = true
 # Created by:  wrangler kv namespace create KNOWN   -> setup.sh writes the id here
 [[kv_namespaces]]
 binding = "KNOWN"
-id = "PASTE_KV_NAMESPACE_ID_HERE"
+id = "f225ec14d9844802be13d73e4a6ee967"
 
 [vars]
 REPO = "cursorvoice/community"
 ALLOW_ORIGIN = "https://community.cursorvoice.app"
 # Allowed token audiences. The app's Desktop client id is already filled in;
 # setup.sh prepends your new Web client id (for the website sign-in).
-GOOGLE_AUDS = "WEB_CLIENT_ID.apps.googleusercontent.com,946007924079-c3nmabuvesemdkktjn4oegg9f43ajem5.apps.googleusercontent.com"
+GOOGLE_AUDS = "946007924079-8ia62qo9qgc0c8cecr563m67cgnim8ap.apps.googleusercontent.com,946007924079-c3nmabuvesemdkktjn4oegg9f43ajem5.apps.googleusercontent.com"
 
 # GITHUB_TOKEN is a SECRET — never put it here. setup.sh runs:
 #   wrangler secret put GITHUB_TOKEN
