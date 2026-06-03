@@ -8,6 +8,19 @@ A tiny Cloudflare Worker (free tier) that powers login + verified submissions on
 3. Creates a GitHub **issue** with the submitted plugin manifest for review.
 
 No plugin is ever auto-merged — submissions land as issues you approve.
+Once live it serves at a stable **https://api.cursorvoice.app** (the app is hard-coded to it).
+
+---
+
+## Quick deploy (recommended)
+```sh
+cd backend
+bash setup.sh
+```
+The script automates everything it can and pauses only for the three
+account-bound steps: approving the Cloudflare login, pasting your Google Web
+client ID, and pasting a GitHub token. Then `git push` to flip the site to real
+login. The manual walkthrough below explains each step if you'd rather do it by hand.
 
 ---
 
