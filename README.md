@@ -51,8 +51,21 @@ The site's login + verified submissions are powered by a small free Cloudflare
 Worker — see [`backend/`](backend) for the deploy runbook. Until it's configured,
 the Submit page falls back to the pre-filled GitHub-issue flow.
 
-Approved submissions are added to [`plugins/`](plugins) and `registry.json`, and
-appear on the site automatically.
+### Automated review
+
+Submissions are graded automatically by a GitHub Action
+([`.github/workflows/grade-submission.yml`](.github/workflows/grade-submission.yml)):
+it validates the manifest, runs a safety scan, and posts a grade on the issue.
+
+- **`open_url`** plugins that pass are **published automatically** (added to
+  `plugins/` + `registry.json`, issue closed) — live on the site within a minute.
+- **`shell` / `applescript`** plugins are graded and labeled **`needs-review`**:
+  they run code on users' Macs, so a maintainer publishes them by adding the
+  **`approved`** label (which re-runs the workflow and publishes).
+- Invalid or duplicate submissions are labeled **`invalid`** with the reason.
+
+> One-time setup: Organization → Settings → Actions → General → **Workflow
+> permissions → Read and write**, so the Action can comment and commit.
 
 **Prefer a pull request?**
 1. Fork this repo.

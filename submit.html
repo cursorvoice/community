@@ -97,6 +97,19 @@
       </div>
       <p class="hint" style="margin-top:16px;text-align:center">Plugins run with your permissions — keep them transparent and safe.</p>
     </div>
+
+    <!-- success state -->
+    <div id="success" style="display:none;text-align:center;padding:14px 0">
+      <div class="orb" style="width:84px;height:84px;margin-bottom:22px"></div>
+      <h2 style="font-size:26px">Submitted! 🎉</h2>
+      <p class="muted" id="successMsg" style="margin:10px auto 6px;max-width:42ch">
+        Your plugin was sent for review. Safe ones are graded and published automatically — usually within a minute.</p>
+      <p style="margin-bottom:26px"><a id="successLink" href="#" target="_blank" rel="noopener">Track its status →</a></p>
+      <div class="cta-row" style="justify-content:center">
+        <button class="btn" onclick="submitAnother()">Submit another</button>
+        <a class="btn ghost" href="index.html">Browse the marketplace</a>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -146,7 +159,7 @@
       fetch(CFG.API_BASE.replace(/\/$/,'')+'/submit',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({idToken,manifest,link})})
         .then(async r=>{ const d=await r.json().catch(()=>({})); if(!r.ok) throw new Error(d.error||('HTTP '+r.status)); return d; })
-        .then(d=>{ banner('ok','✓ Submitted! Track it here: <a href="'+d.url+'" target="_blank" rel="noopener">'+d.url+'</a>'); })
+        .then(d=>{ showSuccess(d.url); })
         .catch(e=>banner('warn','Submit failed: '+e.message))
         .finally(()=>{ $('m_submit').disabled=false; $('m_submit').textContent='Submit for review →'; });
     } else {
@@ -154,7 +167,32 @@
       const body=`**Plugin:** ${name}\n**Link:** ${link||'—'}\n**Type:** ${type}\n\nManifest:\n\`\`\`json\n${JSON.stringify(manifest,null,2)}\n\`\`\`\n\n_Submitted via community.cursorvoice.app_`;
       const url=`https://github.com/${CFG.REPO||'cursorvoice/community'}/issues/new?title=${encodeURIComponent('[plugin] '+name)}&labels=${encodeURIComponent('plugin-submission')}&body=${encodeURIComponent(body)}`;
       window.open(url,'_blank','noopener');
+      showSuccess(url);
     }
+  }
+
+  function showSuccess(url){
+    $('successLink').href = url;
+    $('form').style.display = 'none';
+    $('status').innerHTML = '';
+    $('who').style.display = 'none';
+    $('gate').style.display = 'none';
+    $('success').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function clearForm(){
+    ['m_name','m_desc','m_args','m_tpl','m_link'].forEach(id => $(id).value = '');
+    $('m_type').value = 'open_url';
+    build();
+  }
+
+  function submitAnother(){
+    clearForm();
+    $('success').style.display = 'none';
+    $('form').style.display = 'block';
+    if (BACKEND && identity) { $('who').style.display = 'flex'; }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // ---------- auth (only when backend configured) ----------

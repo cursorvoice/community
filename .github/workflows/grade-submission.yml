@@ -1,0 +1,118 @@
+name: Grade & publish plugin submissions
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: submission-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  grade:
+    if: contains(join(github.event.issue.labels.*.name, ','), 'plugin-submission')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+            const num = issue.number;
+            const labels = (issue.labels || []).map(l => l.name);
+            if (labels.includes('published')) { core.info('already published'); return; }
+
+            const comment = body => github.rest.issues.createComment({ owner, repo, issue_number: num, body });
+            const addLabel = name => github.rest.issues.addLabels({ owner, repo, issue_number: num, labels: [name] }).catch(()=>{});
+
+            // --- extract manifest ---
+            const m = (issue.body || '').match(/```json\s*([\s\S]*?)```/);
+            if (!m) { await comment('⚠️ Could not find a ```json manifest block. Please resubmit via community.cursorvoice.app.'); await addLabel('invalid'); return; }
+            let man;
+            try { man = JSON.parse(m[1]); } catch (e) { await comment('⚠️ The manifest isn’t valid JSON: ' + e.message); await addLabel('invalid'); return; }
+
+            // --- grade: structure ---
+            const problems = [];
+            if (!man.name) problems.push('missing `name`');
+            if (!man.description) problems.push('missing `description`');
+            const run = man.run || {};
+            const type = run.type;
+            if (!['open_url','shell','applescript'].includes(type)) problems.push('`run.type` must be open_url, shell, or applescript');
+            if (!run.template) problems.push('missing `run.template`');
+
+            // --- grade: safety ---
+            const tpl = String(run.template || '');
+            const risky = [];
+            if (type === 'open_url') {
+              if (!/^https:\/\//i.test(tpl)) risky.push('URL must start with https://');
+              if (/(javascript|data|file|vbscript):/i.test(tpl)) risky.push('disallowed URL scheme');
+            }
+            if (type === 'shell') {
+              const danger = /\brm\s+-rf|\brm\s+-fr|\bsudo\b|\bmkfs|\bdd\s+if=|:\(\)\s*\{|\|\s*(sh|bash)\b|(curl|wget)[^|]*\|\s*(sh|bash)|>\s*\/dev\/|\bchmod\s+777|\bnvram\b|\bcsrutil\b|\blaunchctl\b|\bdiskutil\s+(erase|reformat)|\bkillall\b|\beval\b/i;
+              if (danger.test(tpl)) risky.push('shell command contains a destructive/dangerous pattern');
+            }
+            if (type === 'applescript') {
+              if (/do shell script|administrator privileges|\bdelete\b|\berase\b/i.test(tpl)) risky.push('AppleScript contains a risky pattern');
+            }
+
+            const maintainerApproved = labels.includes('approved');
+
+            // --- duplicate check ---
+            const slug = String(man.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'plugin';
+            let registry = [], regSha = null;
+            try {
+              const r = await github.rest.repos.getContent({ owner, repo, path: 'registry.json' });
+              regSha = r.data.sha;
+              registry = JSON.parse(Buffer.from(r.data.content, 'base64').toString('utf8'));
+            } catch (e) { core.info('no registry yet'); }
+            const dupe = registry.some(p => (p.name||'').toLowerCase() === String(man.name||'').toLowerCase());
+
+            // --- grade card ---
+            const grade = problems.length ? '❌ needs changes' : (risky.length ? '⚠️ flagged' : '✅ passed');
+            let card = `### Automated grade: ${grade}\n`;
+            card += `- **Type:** \`${type||'?'}\`\n`;
+            card += problems.length ? `- **Structure:** ${problems.join('; ')}\n` : `- **Structure:** valid\n`;
+            card += risky.length ? `- **Safety:** ${risky.join('; ')}\n` : `- **Safety:** no risky patterns found\n`;
+            if (dupe) card += `- **Duplicate:** a plugin named “${man.name}” already exists\n`;
+
+            // --- decide ---
+            if (problems.length || dupe) {
+              await comment(card + `\nFix the above and resubmit (or edit this issue).`);
+              await addLabel('invalid');
+              return;
+            }
+
+            const autoOk = (type === 'open_url' && risky.length === 0);
+            const publish = maintainerApproved || autoOk;
+
+            if (!publish) {
+              await comment(card + `\nThis plugin runs code on users’ Macs, so it isn’t auto-published. A maintainer can add the **\`approved\`** label to publish it.`);
+              await addLabel('needs-review');
+              return;
+            }
+
+            // --- publish: write plugin file + registry entry ---
+            const author = ((issue.body||'').match(/\*\*Submitted by:\*\*\s*([^<\n]+)/)||[])[1]?.trim() || 'community';
+            const path = `plugins/${slug}.json`;
+            const manContent = Buffer.from(JSON.stringify(man, null, 2) + '\n').toString('base64');
+            let fileSha = null;
+            try { const ex = await github.rest.repos.getContent({ owner, repo, path }); fileSha = ex.data.sha; } catch {}
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo, path, message: `Add plugin: ${man.name} (#${num})`,
+              content: manContent, ...(fileSha ? { sha: fileSha } : {})
+            });
+            registry.push({ name: man.name, file: path, type, description: man.description, author });
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo, path: 'registry.json',
+              message: `Register plugin: ${man.name} (#${num})`,
+              content: Buffer.from(JSON.stringify(registry, null, 2) + '\n').toString('base64'),
+              ...(regSha ? { sha: regSha } : {})
+            });
+
+            await comment(card + `\n🎉 **Published** — live on https://community.cursorvoice.app within a minute.`);
+            await addLabel('published');
+            await github.rest.issues.update({ owner, repo, issue_number: num, state: 'closed' });
