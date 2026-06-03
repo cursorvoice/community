@@ -1,0 +1,12 @@
+{
+  "name": "Test",
+  "description": "Test",
+  "parameters": {
+    "type": "object",
+    "properties": {}
+  },
+  "run": {
+    "type": "shell",
+    "template": "test{{arg}}"
+  }
+}
