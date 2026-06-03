@@ -1,0 +1,12 @@
+{
+  "name": "go to chatgpt",
+  "description": "Goes directly to a new ChatGPT page.",
+  "parameters": {
+    "type": "object",
+    "properties": {}
+  },
+  "run": {
+    "type": "open_url",
+    "template": "https://chatgpt.com/"
+  }
+}
