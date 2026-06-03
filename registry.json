@@ -1,0 +1,23 @@
+[
+  {
+    "name": "search wikipedia",
+    "file": "plugins/wikipedia.json",
+    "type": "open_url",
+    "description": "Open a Wikipedia search for a topic in the browser.",
+    "author": "cursorvoice"
+  },
+  {
+    "name": "say it",
+    "file": "plugins/say.json",
+    "type": "shell",
+    "description": "Speak the given text aloud with the macOS 'say' command.",
+    "author": "cursorvoice"
+  },
+  {
+    "name": "new finder window",
+    "file": "plugins/new-finder-tab.json",
+    "type": "applescript",
+    "description": "Open a Finder window at a given folder path.",
+    "author": "cursorvoice"
+  }
+]

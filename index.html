@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href="https://community.cursorvoice.app/" />
+<meta name="robots" content="index, follow" />
+<link rel="icon" type="image/png" href="https://cursorvoice.app/favicon-32.png" />
+<link rel="apple-touch-icon" href="https://cursorvoice.app/favicon-180.png" />
+<title>Cursor Voice Plugins — teach it new tricks</title>
+<meta name="description" content="Community plugins for Cursor Voice. Drop a JSON manifest in a folder and it becomes a voice command. Browse plugins and submit your own." />
+<meta property="og:title" content="Cursor Voice Plugins" />
+<meta property="og:description" content="Extend Cursor Voice with community plugins — a JSON manifest becomes a voice tool." />
+<meta property="og:image" content="https://cursorvoice.app/assets/hero-shot.jpg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --violet:#8c4cf2; --pink:#f773c7; --sky:#66c7ff; --mint:#6bf7e5;
+    --bg:#07070b; --surface:rgba(255,255,255,.035); --surface-2:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.09); --border-2:rgba(255,255,255,.14);
+    --fg:#f4f4f8; --fg-dim:#a4a4b4; --fg-faint:#6c6c7e;
+    --maxw:920px; --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .field{position:fixed;inset:0;z-index:-2;
+    background:radial-gradient(50vw 50vw at 15% -10%,rgba(140,76,242,.16),transparent 60%),
+               radial-gradient(45vw 45vw at 95% 5%,rgba(247,115,199,.10),transparent 60%)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);background:rgba(7,7,11,.6);border-bottom:1px solid var(--border)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16px;text-decoration:none;color:var(--fg);letter-spacing:-.01em}
+  .brand .mark{width:24px;height:24px;border-radius:50%;background:url('https://cursorvoice.app/assets/orb-logo.png') center / cover no-repeat;box-shadow:0 0 14px rgba(140,76,242,.55)}
+  .nav-links{display:flex;gap:22px;align-items:center}
+  .nav-links a{color:var(--fg-dim);text-decoration:none;font-size:14px;transition:color .2s}
+  .nav-links a:hover{color:var(--fg)}
+  header{text-align:center;padding:80px 0 50px}
+  h1{font-size:clamp(34px,6vw,56px);font-weight:780;letter-spacing:-.03em;line-height:1.05;margin-bottom:16px}
+  h1 .grad{background:linear-gradient(110deg,var(--violet),var(--pink),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-size:18px;color:var(--fg-dim);max-width:60ch;margin:0 auto}
+  h2{font-size:26px;font-weight:680;letter-spacing:-.02em;margin:54px 0 16px}
+  p,li{font-size:15.5px;color:var(--fg-dim);font-weight:350;margin-bottom:12px}
+  p b,li b{color:var(--fg);font-weight:560}
+  a{color:var(--sky);text-decoration:none}
+  a:hover{text-decoration:underline}
+  ol{padding-left:22px}
+  li{margin-bottom:8px}
+  pre{background:#0c0c14;border:1px solid var(--border);border-radius:12px;padding:18px;overflow-x:auto;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cfe;}
+  code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--surface-2);padding:2px 6px;border-radius:5px;color:var(--mint)}
+  pre code{background:none;padding:0;color:inherit}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin:18px 0}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .card h3{font-size:16px;font-weight:620;margin-bottom:6px}
+  .card .type{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint);background:var(--surface-2);padding:2px 7px;border-radius:20px;margin-bottom:8px}
+  .card p{font-size:14px;margin:0}
+  .card .by{font-size:12px;color:var(--fg-faint);margin-top:8px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:11px;font-weight:560;text-decoration:none;background:linear-gradient(110deg,var(--violet),var(--pink));color:#fff;box-shadow:0 8px 24px rgba(140,76,242,.35);margin-top:6px}
+  .btn:hover{text-decoration:none;transform:translateY(-1px)}
+  footer{border-top:1px solid var(--border);padding:34px 0;text-align:center;margin-top:60px}
+  footer p{font-size:13px;color:var(--fg-faint)}
+</style>
+</head>
+<body>
+<div class="field" aria-hidden="true"></div>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="https://cursorvoice.app"><span class="mark"></span> Cursor Voice</a>
+    <div class="nav-links">
+      <a href="https://cursorvoice.app">Home</a>
+      <a href="#submit">Submit a plugin</a>
+      <a href="https://github.com/cursorvoice/community" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <h1>Teach Cursor Voice <span class="grad">new tricks</span></h1>
+    <p class="sub">Community plugins extend the assistant with your own voice commands. A plugin is just a small JSON file — drop it in a folder and it becomes a tool the assistant can call.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <h2>Browse plugins</h2>
+  <div class="grid" id="plugins"><p style="color:var(--fg-faint)">Loading plugins…</p></div>
+
+  <h2>How plugins work</h2>
+  <p>Cursor Voice loads every <code>.json</code> manifest in:</p>
+  <pre><code>~/Library/Application Support/CursorVoice/plugins/</code></pre>
+  <p>Each manifest defines one tool: a <b>name</b>, a <b>description</b> (so the model knows when to use it), its <b>parameters</b>, and a <b>run</b> action — a <code>shell</code> command, <code>applescript</code>, or <code>open_url</code> template with <code>{{argument}}</code> placeholders.</p>
+
+  <h2>Manifest format</h2>
+  <pre><code>{
+  "name": "search wikipedia",
+  "description": "Open a Wikipedia search for a topic in the browser.",
+  "parameters": {
+    "type": "object",
+    "properties": { "topic": { "type": "string" } },
+    "required": ["topic"]
+  },
+  "run": {
+    "type": "open_url",
+    "template": "https://en.wikipedia.org/w/index.php?search={{topic}}"
+  }
+}</code></pre>
+  <p>Then just say <i>“search Wikipedia for the Eiffel Tower.”</i> The tool name is exposed to the assistant as <code>plugin_search_wikipedia</code>. Run types:</p>
+  <ul>
+    <li><code>open_url</code> — opens a URL (args are URL-encoded).</li>
+    <li><code>shell</code> — runs a zsh command (args are shell-quoted; gated by the destructive-command guard and Dry-run).</li>
+    <li><code>applescript</code> — runs AppleScript (args are escaped).</li>
+  </ul>
+  <p style="color:var(--fg-faint);font-size:13.5px">⚠️ Plugins run with your permissions. Only install manifests you trust — review the <code>run</code> template before adding one.</p>
+
+  <h2 id="submit">Submit your plugin</h2>
+  <p>Share a plugin with everyone:</p>
+  <ol>
+    <li>Fork <a href="https://github.com/cursorvoice/community" target="_blank" rel="noopener">cursorvoice/community</a>.</li>
+    <li>Add your manifest to <code>plugins/your-plugin.json</code>.</li>
+    <li>Add an entry to <code>registry.json</code> (name, file, type, description, author).</li>
+    <li>Open a pull request. Once merged, it shows up here.</li>
+  </ol>
+  <a class="btn" href="https://github.com/cursorvoice/community/blob/main/README.md" target="_blank" rel="noopener">Read the contributing guide →</a>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Cursor Voice is open source under the MIT license · <a href="https://cursorvoice.app">cursorvoice.app</a> · not affiliated with OpenAI or Apple</p>
+  </div>
+</footer>
+
+<script>
+  fetch('registry.json').then(r => r.json()).then(list => {
+    const el = document.getElementById('plugins');
+    if (!Array.isArray(list) || !list.length) { el.innerHTML = '<p style="color:var(--fg-faint)">No plugins yet — be the first to submit one!</p>'; return; }
+    el.innerHTML = list.map(p => `
+      <div class="card">
+        <span class="type">${(p.type||'').replace(/"/g,'')}</span>
+        <h3>${(p.name||'').replace(/</g,'&lt;')}</h3>
+        <p>${(p.description||'').replace(/</g,'&lt;')}</p>
+        <div class="by">by ${(p.author||'anonymous').replace(/</g,'&lt;')} · <a href="${(p.file||'#').replace(/"/g,'')}" target="_blank" rel="noopener">manifest</a></div>
+      </div>`).join('');
+  }).catch(() => {
+    document.getElementById('plugins').innerHTML = '<p style="color:var(--fg-faint)">Couldn\'t load the registry.</p>';
+  });
+</script>
+</body>
+</html>
