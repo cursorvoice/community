@@ -61,5 +61,12 @@
     "type": "shell",
     "description": "Put the Mac's display to sleep (locks the screen if a password is required on wake).",
     "author": "cursorvoice"
+  },
+  {
+    "name": "Test",
+    "file": "plugins/test.json",
+    "type": "shell",
+    "description": "Test",
+    "author": "inqweqwe_98835"
   }
 ]
