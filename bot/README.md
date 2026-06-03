@@ -10,6 +10,18 @@ When someone submits a plugin, the bot posts it to your channel. React:
 It also renames itself and sets the Cursor Voice avatar on startup — no Developer
 Portal needed.
 
+## Manage the marketplace from Discord (slash commands)
+- **`/plugin_list`** — show every published plugin.
+- **`/plugin_add`** — publish a plugin directly: pick a name, description, kind
+  (URL / shell / AppleScript), the action template (with `{{arg}}` placeholders),
+  and optional comma-separated arg names. Commits to the registry → live in ~1 min.
+- **`/plugin_delete`** — remove a plugin by name (deletes its file + registry entry).
+
+> Slash commands need the bot invited with the **`applications.commands`** scope.
+> If you only invited it with `bot`, re-open the OAuth2 → URL Generator with **both**
+> `bot` **and** `applications.commands` checked and authorize again (no need to kick it).
+> Set `APPROVER_IDS` to restrict who can add/delete.
+
 ## Setup
 1. Put this `bot/` folder wherever the bot runs (same host as before is fine).
 2. Install deps:

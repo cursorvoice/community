@@ -24,7 +24,8 @@ Env:
   APPROVER_IDS    optional comma-separated Discord user IDs allowed to decide
                   (empty = anyone in the channel)
 """
-import os, json, asyncio, aiohttp, discord
+import os, json, base64, re, asyncio, aiohttp, discord
+from discord import app_commands
 
 TOKEN       = os.environ["DISCORD_TOKEN"]
 GH_TOKEN    = os.environ["GITHUB_TOKEN"]
@@ -39,6 +40,13 @@ ACCENT      = 0x8C4CF2
 
 intents = discord.Intents.default()          # includes guild reactions; no privileged intents needed
 bot = discord.Client(intents=intents)
+tree = app_commands.CommandTree(bot)         # slash commands: /plugin_add /plugin_delete /plugin_list
+
+def authorized(user_id: int) -> bool:
+    return (not APPROVERS) or (user_id in APPROVERS)
+
+def slugify(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", (name or "").lower()).strip("-") or "plugin"
 
 # issue_number -> message_id, persisted so restarts don't repost
 posted = {}
@@ -110,6 +118,17 @@ async def on_ready():
         print(f"Identity set: {BOT_NAME}")
     except Exception as e:
         print("identity update skipped:", e)
+    # Register slash commands. Sync to the channel's guild for instant availability.
+    try:
+        ch = bot.get_channel(CHANNEL_ID)
+        if ch is not None and getattr(ch, "guild", None) is not None:
+            tree.copy_global_to(guild=ch.guild)
+            cmds = await tree.sync(guild=ch.guild)
+        else:
+            cmds = await tree.sync()
+        print(f"Slash commands synced: {[c.name for c in cmds]}")
+    except Exception as e:
+        print("slash sync failed:", e)
     bot.loop.create_task(poll_loop())
 
 @bot.event
@@ -142,6 +161,103 @@ async def on_raw_reaction_add(payload):
         pass
     # Stop tracking once decided.
     posted.pop(num, None); save_state()
+
+# ---------- direct marketplace management (add / delete from Discord) ----------
+async def get_registry(session):
+    st, data = await gh(session, "GET", f"/repos/{REPO}/contents/registry.json")
+    if st != 200 or not isinstance(data, dict):
+        return [], None
+    reg = json.loads(base64.b64decode(data["content"]).decode())
+    return reg, data["sha"]
+
+async def put_file(session, path, content_str, message, sha=None):
+    body = {"message": message, "content": base64.b64encode(content_str.encode()).decode()}
+    if sha: body["sha"] = sha
+    return await gh(session, "PUT", f"/repos/{REPO}/contents/{path}", json=body)
+
+async def publish_plugin(session, manifest, author):
+    reg, regsha = await get_registry(session)
+    name = manifest["name"]
+    if any((p.get("name", "").lower() == name.lower()) for p in reg):
+        return f"⚠️ A plugin named **{name}** already exists. Delete it first to replace."
+    slug = slugify(name)
+    path = f"plugins/{slug}.json"
+    st, _ = await put_file(session, path, json.dumps(manifest, indent=2) + "\n",
+                           f"Add plugin: {name} (via Discord)")
+    if st not in (200, 201):
+        return f"❌ Couldn't write the plugin file (HTTP {st})."
+    reg.append({"name": name, "file": path, "type": manifest["run"]["type"],
+                "description": manifest["description"], "author": author})
+    st, _ = await put_file(session, "registry.json", json.dumps(reg, indent=2) + "\n",
+                           f"Register plugin: {name} (via Discord)", sha=regsha)
+    if st not in (200, 201):
+        return f"❌ Wrote the file but couldn't update the registry (HTTP {st})."
+    return f"✅ Published **{name}** — live on community.cursorvoice.app within a minute."
+
+async def remove_plugin(session, name):
+    reg, regsha = await get_registry(session)
+    slug = slugify(name)
+    match = next((p for p in reg if p.get("name", "").lower() == name.lower()
+                  or p.get("file", "").endswith(f"/{slug}.json")), None)
+    if not match:
+        return f"🤷 No plugin named **{name}** in the marketplace."
+    path = match["file"]
+    st, data = await gh(session, "GET", f"/repos/{REPO}/contents/{path}")
+    if st == 200 and isinstance(data, dict):
+        await gh(session, "DELETE", f"/repos/{REPO}/contents/{path}",
+                 json={"message": f"Remove plugin: {match['name']} (via Discord)", "sha": data["sha"]})
+    reg = [p for p in reg if p is not match]
+    st, _ = await put_file(session, "registry.json", json.dumps(reg, indent=2) + "\n",
+                           f"Unregister plugin: {match['name']} (via Discord)", sha=regsha)
+    if st not in (200, 201):
+        return f"❌ Couldn't update the registry (HTTP {st})."
+    return f"🗑️ Removed **{match['name']}** from the marketplace."
+
+@tree.command(name="plugin_list", description="List the plugins currently on the marketplace")
+async def plugin_list(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    async with aiohttp.ClientSession() as s:
+        reg, _ = await get_registry(s)
+    if not reg:
+        await interaction.followup.send("No plugins published yet.", ephemeral=True); return
+    lines = [f"• **{p['name']}** (`{p['type']}`) — {p['description']}" for p in reg]
+    await interaction.followup.send("\n".join(lines)[:1900], ephemeral=True)
+
+@tree.command(name="plugin_add", description="Publish a new plugin to the marketplace")
+@app_commands.describe(name="Plugin name", description="One line: what it does",
+                       template="The action, with {{arg}} placeholders",
+                       args="Optional: comma-separated argument names")
+@app_commands.choices(kind=[
+    app_commands.Choice(name="Open a URL", value="open_url"),
+    app_commands.Choice(name="Shell command", value="shell"),
+    app_commands.Choice(name="AppleScript", value="applescript"),
+])
+async def plugin_add(interaction: discord.Interaction, name: str, description: str,
+                     kind: app_commands.Choice[str], template: str, args: str = ""):
+    if not authorized(interaction.user.id):
+        await interaction.response.send_message("You're not allowed to manage plugins.", ephemeral=True); return
+    await interaction.response.defer(ephemeral=True)
+    arglist = [a.strip() for a in args.split(",") if a.strip()]
+    props = {a: {"type": "string"} for a in arglist}
+    manifest = {
+        "name": name, "description": description,
+        "parameters": {"type": "object", "properties": props,
+                       **({"required": arglist} if arglist else {})},
+        "run": {"type": kind.value, "template": template},
+    }
+    async with aiohttp.ClientSession() as s:
+        msg = await publish_plugin(s, manifest, author=interaction.user.name)
+    await interaction.followup.send(msg, ephemeral=True)
+
+@tree.command(name="plugin_delete", description="Remove a plugin from the marketplace")
+@app_commands.describe(name="The plugin's name (as shown in /plugin_list)")
+async def plugin_delete(interaction: discord.Interaction, name: str):
+    if not authorized(interaction.user.id):
+        await interaction.response.send_message("You're not allowed to manage plugins.", ephemeral=True); return
+    await interaction.response.defer(ephemeral=True)
+    async with aiohttp.ClientSession() as s:
+        msg = await remove_plugin(s, name)
+    await interaction.followup.send(msg, ephemeral=True)
 
 if __name__ == "__main__":
     bot.run(TOKEN)
