@@ -19,5 +19,12 @@
     "type": "applescript",
     "description": "Open a Finder window at a given folder path.",
     "author": "cursorvoice"
+  },
+  {
+    "name": "search youtube",
+    "file": "plugins/search-youtube.json",
+    "type": "open_url",
+    "description": "Search YouTube for a query.",
+    "author": "Abde_rrahmane"
   }
 ]
