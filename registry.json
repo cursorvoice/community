@@ -61,12 +61,5 @@
     "type": "shell",
     "description": "Put the Mac's display to sleep (locks the screen if a password is required on wake).",
     "author": "cursorvoice"
-  },
-  {
-    "name": "go to chatgpt",
-    "file": "plugins/go-to-chatgpt.json",
-    "type": "open_url",
-    "description": "Goes directly to a new ChatGPT page.",
-    "author": "Abde_rrahmane"
   }
 ]
