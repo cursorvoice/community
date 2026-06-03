@@ -1,0 +1,67 @@
+name: Submit a plugin
+description: Publish a Cursor Voice plugin to the community marketplace.
+title: "[plugin] "
+labels: ["plugin-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing a plugin! The easiest way to fill this in is the form on
+        **[community.cursorvoice.app](https://community.cursorvoice.app)** — it builds the
+        manifest for you and opens this issue pre-filled. Otherwise, complete the fields below.
+  - type: input
+    id: name
+    attributes:
+      label: Plugin name
+      placeholder: search wikipedia
+    validations:
+      required: true
+  - type: input
+    id: description
+    attributes:
+      label: What it does (one line)
+      placeholder: Open a Wikipedia search for a topic in the browser.
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Action type
+      options:
+        - open_url
+        - shell
+        - applescript
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: Your name / handle
+      placeholder: yourhandle
+  - type: input
+    id: link
+    attributes:
+      label: Link (optional)
+      placeholder: github.com/you
+  - type: textarea
+    id: manifest
+    attributes:
+      label: Manifest JSON
+      description: The full plugin manifest. (The website generates this for you.)
+      render: json
+      placeholder: |
+        {
+          "name": "search wikipedia",
+          "description": "Open a Wikipedia search for a topic in the browser.",
+          "parameters": { "type": "object", "properties": { "topic": { "type": "string" } }, "required": ["topic"] },
+          "run": { "type": "open_url", "template": "https://en.wikipedia.org/w/index.php?search={{topic}}" }
+        }
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Confirm
+      options:
+        - label: This plugin is transparent about what it does and is safe to run.
+          required: true

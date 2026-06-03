@@ -41,6 +41,16 @@ the assistant can call (exposed as `plugin_<name>`).
 (named to match your `parameters.properties`).
 
 ## Submit your plugin
+
+**Easiest — from the site:** open the **Submit** form at
+[community.cursorvoice.app](https://community.cursorvoice.app). It builds the
+manifest as you type and opens a pre-filled submission — one click to publish for
+review. (You can also [open a submission issue directly](https://github.com/cursorvoice/community/issues/new?template=plugin-submission.yml).)
+
+Approved submissions are added to [`plugins/`](plugins) and `registry.json`, and
+appear on the site automatically.
+
+**Prefer a pull request?**
 1. Fork this repo.
 2. Add your manifest to `plugins/your-plugin.json`.
 3. Add an entry to `registry.json`:

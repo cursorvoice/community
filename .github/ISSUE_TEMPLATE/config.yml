@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Submit a plugin (easiest)
+    url: https://community.cursorvoice.app
+    about: Use the form on the site — it builds the manifest and opens a pre-filled submission.

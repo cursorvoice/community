@@ -7,10 +7,10 @@
 <meta name="robots" content="index, follow" />
 <link rel="icon" type="image/png" href="https://cursorvoice.app/favicon-32.png" />
 <link rel="apple-touch-icon" href="https://cursorvoice.app/favicon-180.png" />
-<title>Cursor Voice Plugins — teach it new tricks</title>
-<meta name="description" content="Community plugins for Cursor Voice. Drop a JSON manifest in a folder and it becomes a voice command. Browse plugins and submit your own." />
+<title>Cursor Voice Plugins</title>
+<meta name="description" content="The plugin marketplace for Cursor Voice. Browse community voice commands or submit your own — right from the page." />
 <meta property="og:title" content="Cursor Voice Plugins" />
-<meta property="og:description" content="Extend Cursor Voice with community plugins — a JSON manifest becomes a voice tool." />
+<meta property="og:description" content="Browse community plugins for Cursor Voice and submit your own in a couple of clicks." />
 <meta property="og:image" content="https://cursorvoice.app/assets/hero-shot.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,132 +19,343 @@
   :root{
     --violet:#8c4cf2; --pink:#f773c7; --sky:#66c7ff; --mint:#6bf7e5;
     --bg:#07070b; --surface:rgba(255,255,255,.035); --surface-2:rgba(255,255,255,.06);
-    --border:rgba(255,255,255,.09); --border-2:rgba(255,255,255,.14);
+    --border:rgba(255,255,255,.09); --border-2:rgba(255,255,255,.16);
     --fg:#f4f4f8; --fg-dim:#a4a4b4; --fg-faint:#6c6c7e;
-    --maxw:920px; --ease:cubic-bezier(.22,.61,.36,1);
+    --maxw:1080px; --ease:cubic-bezier(.22,.61,.36,1);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);line-height:1.65;-webkit-font-smoothing:antialiased}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;-webkit-font-smoothing:antialiased}
   .field{position:fixed;inset:0;z-index:-2;
-    background:radial-gradient(50vw 50vw at 15% -10%,rgba(140,76,242,.16),transparent 60%),
-               radial-gradient(45vw 45vw at 95% 5%,rgba(247,115,199,.10),transparent 60%)}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-  nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);background:rgba(7,7,11,.6);border-bottom:1px solid var(--border)}
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16px;text-decoration:none;color:var(--fg);letter-spacing:-.01em}
-  .brand .mark{width:24px;height:24px;border-radius:50%;background:url('https://cursorvoice.app/assets/orb-logo.png') center / cover no-repeat;box-shadow:0 0 14px rgba(140,76,242,.55)}
-  .nav-links{display:flex;gap:22px;align-items:center}
-  .nav-links a{color:var(--fg-dim);text-decoration:none;font-size:14px;transition:color .2s}
-  .nav-links a:hover{color:var(--fg)}
-  header{text-align:center;padding:80px 0 50px}
-  h1{font-size:clamp(34px,6vw,56px);font-weight:780;letter-spacing:-.03em;line-height:1.05;margin-bottom:16px}
-  h1 .grad{background:linear-gradient(110deg,var(--violet),var(--pink),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{font-size:18px;color:var(--fg-dim);max-width:60ch;margin:0 auto}
-  h2{font-size:26px;font-weight:680;letter-spacing:-.02em;margin:54px 0 16px}
-  p,li{font-size:15.5px;color:var(--fg-dim);font-weight:350;margin-bottom:12px}
-  p b,li b{color:var(--fg);font-weight:560}
+    background:radial-gradient(55vw 55vw at 12% -12%,rgba(140,76,242,.18),transparent 60%),
+               radial-gradient(50vw 50vw at 96% 2%,rgba(247,115,199,.12),transparent 60%),
+               radial-gradient(40vw 40vw at 70% 110%,rgba(102,199,255,.10),transparent 60%)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
   a{color:var(--sky);text-decoration:none}
   a:hover{text-decoration:underline}
-  ol{padding-left:22px}
-  li{margin-bottom:8px}
-  pre{background:#0c0c14;border:1px solid var(--border);border-radius:12px;padding:18px;overflow-x:auto;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#cfe;}
-  code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--surface-2);padding:2px 6px;border-radius:5px;color:var(--mint)}
-  pre code{background:none;padding:0;color:inherit}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin:18px 0}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
-  .card h3{font-size:16px;font-weight:620;margin-bottom:6px}
-  .card .type{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint);background:var(--surface-2);padding:2px 7px;border-radius:20px;margin-bottom:8px}
-  .card p{font-size:14px;margin:0}
-  .card .by{font-size:12px;color:var(--fg-faint);margin-top:8px}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:11px;font-weight:560;text-decoration:none;background:linear-gradient(110deg,var(--violet),var(--pink));color:#fff;box-shadow:0 8px 24px rgba(140,76,242,.35);margin-top:6px}
-  .btn:hover{text-decoration:none;transform:translateY(-1px)}
-  footer{border-top:1px solid var(--border);padding:34px 0;text-align:center;margin-top:60px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);background:rgba(7,7,11,.55);border-bottom:1px solid var(--border)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16px;text-decoration:none;color:var(--fg)}
+  .brand .mark{width:24px;height:24px;border-radius:50%;background:url('https://cursorvoice.app/assets/orb-logo.png') center / cover no-repeat;box-shadow:0 0 14px rgba(140,76,242,.55)}
+  .nav-links{display:flex;gap:24px;align-items:center}
+  .nav-links a{color:var(--fg-dim);font-size:14px;transition:color .2s}
+  .nav-links a:hover{color:var(--fg);text-decoration:none}
+
+  /* hero */
+  header{text-align:center;padding:104px 0 64px}
+  .eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:18px}
+  h1{font-size:clamp(40px,7vw,68px);font-weight:800;letter-spacing:-.035em;line-height:1.02;margin-bottom:22px}
+  h1 .grad{background:linear-gradient(110deg,var(--violet),var(--pink),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-size:18px;color:var(--fg-dim);max-width:52ch;margin:0 auto 34px;font-weight:350}
+  .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:13px;font-weight:600;font-size:15px;cursor:pointer;border:0;font-family:inherit;
+    background:linear-gradient(110deg,var(--violet),var(--pink));color:#fff;box-shadow:0 10px 30px rgba(140,76,242,.4);transition:transform .18s var(--ease)}
+  .btn:hover{text-decoration:none;transform:translateY(-2px)}
+  .btn.ghost{background:var(--surface-2);color:var(--fg);box-shadow:none;border:1px solid var(--border-2)}
+  .btn.ghost:hover{background:rgba(255,255,255,.1)}
+  .btn.sm{padding:9px 16px;font-size:13.5px;border-radius:10px}
+
+  /* toolbar */
+  .toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0 26px}
+  .search{flex:1;min-width:220px;position:relative}
+  .search input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px 16px 13px 42px;color:var(--fg);font-size:15px;font-family:inherit;outline:none;transition:border .2s,background .2s}
+  .search input:focus{border-color:var(--border-2);background:var(--surface-2)}
+  .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.4}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{padding:9px 15px;border-radius:11px;background:var(--surface);border:1px solid var(--border);color:var(--fg-dim);font-size:13.5px;font-weight:500;cursor:pointer;transition:.18s}
+  .chip:hover{color:var(--fg);border-color:var(--border-2)}
+  .chip.on{background:rgba(140,76,242,.18);border-color:rgba(140,76,242,.5);color:#fff}
+
+  /* grid + cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-bottom:24px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;display:flex;flex-direction:column;min-height:172px;transition:.2s var(--ease)}
+  .card:hover{border-color:var(--border-2);transform:translateY(-3px);background:var(--surface-2)}
+  .card .type{align-self:flex-start;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint);background:rgba(107,247,229,.1);padding:3px 9px;border-radius:20px;margin-bottom:13px;letter-spacing:.02em}
+  .card h3{font-size:17.5px;font-weight:650;margin-bottom:7px;letter-spacing:-.01em}
+  .card p{font-size:14.5px;color:var(--fg-dim);font-weight:350;line-height:1.55;margin:0}
+  .card .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:16px}
+  .card .by{font-size:12.5px;color:var(--fg-faint)}
+  .copy{background:var(--surface-2);border:1px solid var(--border);color:var(--fg);border-radius:9px;padding:7px 13px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:.18s;white-space:nowrap}
+  .copy:hover{border-color:var(--border-2);background:rgba(255,255,255,.1)}
+  .copy.done{color:var(--mint);border-color:rgba(107,247,229,.4)}
+  .empty{grid-column:1/-1;text-align:center;color:var(--fg-faint);padding:50px 0;font-size:15px}
+
+  /* how it works — compact */
+  .how{margin:30px 0 10px}
+  .how h2{font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:20px}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+  .step .n{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:rgba(140,76,242,.16);color:#cbb4ff;margin-bottom:11px}
+  .step h4{font-size:15.5px;font-weight:600;margin-bottom:5px}
+  .step p{font-size:14px;color:var(--fg-dim);font-weight:350;line-height:1.5}
+  .step code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface-2);padding:2px 6px;border-radius:5px;color:var(--mint)}
+
+  footer{border-top:1px solid var(--border);padding:40px 0;text-align:center;margin-top:80px}
   footer p{font-size:13px;color:var(--fg-faint)}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;z-index:200;background:rgba(4,4,8,.7);backdrop-filter:blur(8px);display:none;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+  .overlay.open{display:flex}
+  .modal{width:100%;max-width:560px;background:#0c0c14;border:1px solid var(--border-2);border-radius:22px;padding:34px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+  .modal h2{font-size:24px;font-weight:720;letter-spacing:-.02em}
+  .modal .lead{font-size:14.5px;color:var(--fg-dim);font-weight:350;margin:6px 0 24px}
+  .x{background:none;border:0;color:var(--fg-faint);font-size:24px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:8px}
+  .x:hover{color:var(--fg);background:var(--surface-2)}
+  .f{margin-bottom:17px}
+  .f label{display:block;font-size:13px;font-weight:550;margin-bottom:7px;color:var(--fg)}
+  .f label .opt{color:var(--fg-faint);font-weight:400}
+  .f input,.f select,.f textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 14px;color:var(--fg);font-size:14.5px;font-family:inherit;outline:none;transition:.2s}
+  .f input:focus,.f select:focus,.f textarea:focus{border-color:rgba(140,76,242,.5);background:var(--surface-2)}
+  .f .hint{font-size:12px;color:var(--fg-faint);margin-top:6px;line-height:1.5}
+  .f-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .preview{background:#07070d;border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.55;color:#bfe;white-space:pre;overflow-x:auto;margin-bottom:20px;max-height:200px;overflow-y:auto}
+  .modal-actions{display:flex;gap:11px;flex-wrap:wrap}
+  .modal-actions .btn{flex:1;justify-content:center}
+  .note{font-size:12px;color:var(--fg-faint);margin-top:16px;text-align:center;line-height:1.5}
+  @media(max-width:560px){.f-row{grid-template-columns:1fr}.modal{padding:26px}}
 </style>
 </head>
 <body>
 <div class="field" aria-hidden="true"></div>
+
 <nav>
   <div class="wrap">
     <a class="brand" href="https://cursorvoice.app"><span class="mark"></span> Cursor Voice</a>
     <div class="nav-links">
       <a href="https://cursorvoice.app">Home</a>
-      <a href="#submit">Submit a plugin</a>
-      <a href="https://github.com/cursorvoice/community" target="_blank" rel="noopener">GitHub</a>
+      <a href="#how">How it works</a>
+      <a href="#" onclick="openSubmit();return false">Submit</a>
     </div>
   </div>
 </nav>
 
 <header>
   <div class="wrap">
-    <h1>Teach Cursor Voice <span class="grad">new tricks</span></h1>
-    <p class="sub">Community plugins extend the assistant with your own voice commands. A plugin is just a small JSON file — drop it in a folder and it becomes a tool the assistant can call.</p>
+    <div class="eyebrow">Plugin marketplace</div>
+    <h1>Give your Mac <span class="grad">new skills</span></h1>
+    <p class="sub">Community plugins turn a small JSON file into a voice command. Browse what people have built — or publish your own in a couple of clicks.</p>
+    <div class="cta-row">
+      <button class="btn" onclick="openSubmit()">＋ Submit a plugin</button>
+      <a class="btn ghost" href="#how">See how it works</a>
+    </div>
   </div>
 </header>
 
 <main class="wrap">
-  <h2>Browse plugins</h2>
-  <div class="grid" id="plugins"><p style="color:var(--fg-faint)">Loading plugins…</p></div>
+  <div class="toolbar">
+    <div class="search">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="Search plugins…" oninput="render()" />
+    </div>
+    <div class="chips" id="chips">
+      <span class="chip on" data-t="all" onclick="setFilter('all')">All</span>
+      <span class="chip" data-t="open_url" onclick="setFilter('open_url')">URL</span>
+      <span class="chip" data-t="shell" onclick="setFilter('shell')">Shell</span>
+      <span class="chip" data-t="applescript" onclick="setFilter('applescript')">AppleScript</span>
+    </div>
+  </div>
 
-  <h2>How plugins work</h2>
-  <p>Cursor Voice loads every <code>.json</code> manifest in:</p>
-  <pre><code>~/Library/Application Support/CursorVoice/plugins/</code></pre>
-  <p>Each manifest defines one tool: a <b>name</b>, a <b>description</b> (so the model knows when to use it), its <b>parameters</b>, and a <b>run</b> action — a <code>shell</code> command, <code>applescript</code>, or <code>open_url</code> template with <code>{{argument}}</code> placeholders.</p>
+  <div class="grid" id="plugins"><p class="empty">Loading plugins…</p></div>
 
-  <h2>Manifest format</h2>
-  <pre><code>{
-  "name": "search wikipedia",
-  "description": "Open a Wikipedia search for a topic in the browser.",
-  "parameters": {
-    "type": "object",
-    "properties": { "topic": { "type": "string" } },
-    "required": ["topic"]
-  },
-  "run": {
-    "type": "open_url",
-    "template": "https://en.wikipedia.org/w/index.php?search={{topic}}"
-  }
-}</code></pre>
-  <p>Then just say <i>“search Wikipedia for the Eiffel Tower.”</i> The tool name is exposed to the assistant as <code>plugin_search_wikipedia</code>. Run types:</p>
-  <ul>
-    <li><code>open_url</code> — opens a URL (args are URL-encoded).</li>
-    <li><code>shell</code> — runs a zsh command (args are shell-quoted; gated by the destructive-command guard and Dry-run).</li>
-    <li><code>applescript</code> — runs AppleScript (args are escaped).</li>
-  </ul>
-  <p style="color:var(--fg-faint);font-size:13.5px">⚠️ Plugins run with your permissions. Only install manifests you trust — review the <code>run</code> template before adding one.</p>
-
-  <h2 id="submit">Submit your plugin</h2>
-  <p>Share a plugin with everyone:</p>
-  <ol>
-    <li>Fork <a href="https://github.com/cursorvoice/community" target="_blank" rel="noopener">cursorvoice/community</a>.</li>
-    <li>Add your manifest to <code>plugins/your-plugin.json</code>.</li>
-    <li>Add an entry to <code>registry.json</code> (name, file, type, description, author).</li>
-    <li>Open a pull request. Once merged, it shows up here.</li>
-  </ol>
-  <a class="btn" href="https://github.com/cursorvoice/community/blob/main/README.md" target="_blank" rel="noopener">Read the contributing guide →</a>
+  <section class="how" id="how">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <h4>Describe a tool</h4>
+        <p>A plugin is one JSON file — a name, a description, and an action: open a URL, run a shell command, or AppleScript.</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <h4>Drop it in</h4>
+        <p>Save it to <code>~/Library/Application&nbsp;Support/CursorVoice/plugins/</code>. Cursor Voice picks it up automatically.</p>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <h4>Just say it</h4>
+        <p>The assistant can now call your tool by voice. Use <strong style="color:var(--fg)">Submit</strong> to share it here for everyone.</p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <p>Cursor Voice is open source under the MIT license · <a href="https://cursorvoice.app">cursorvoice.app</a> · not affiliated with OpenAI or Apple</p>
+    <p>Open source under the MIT license · <a href="https://cursorvoice.app">cursorvoice.app</a> · <a href="https://github.com/cursorvoice/community" target="_blank" rel="noopener">GitHub</a> · not affiliated with OpenAI or Apple</p>
   </div>
 </footer>
 
+<!-- Submit modal -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeSubmit()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <div class="modal-head">
+      <h2 id="mt">Submit a plugin</h2>
+      <button class="x" onclick="closeSubmit()" aria-label="Close">×</button>
+    </div>
+    <p class="lead">Fill this in and we’ll open a pre-filled GitHub issue — just press “Submit” there to publish it for review.</p>
+
+    <div class="f">
+      <label>Plugin name</label>
+      <input id="m_name" placeholder="search wikipedia" oninput="build()" />
+      <div class="hint">Plain words. Exposed to the assistant as <code id="m_id" style="color:var(--mint)">plugin_…</code></div>
+    </div>
+    <div class="f">
+      <label>What it does</label>
+      <input id="m_desc" placeholder="Open a Wikipedia search for a topic in the browser." oninput="build()" />
+      <div class="hint">One line — this is how the assistant knows when to use it.</div>
+    </div>
+    <div class="f-row">
+      <div class="f">
+        <label>Action</label>
+        <select id="m_type" onchange="build()">
+          <option value="open_url">Open a URL</option>
+          <option value="shell">Run a shell command</option>
+          <option value="applescript">Run AppleScript</option>
+        </select>
+      </div>
+      <div class="f">
+        <label>Arguments <span class="opt">(optional)</span></label>
+        <input id="m_args" placeholder="topic, count" oninput="build()" />
+      </div>
+    </div>
+    <div class="f">
+      <label id="m_tpl_label">URL template</label>
+      <input id="m_tpl" placeholder="https://en.wikipedia.org/w/index.php?search={{topic}}" oninput="build()" />
+      <div class="hint">Use <code>{{argument}}</code> placeholders for each argument above.</div>
+    </div>
+    <div class="f-row">
+      <div class="f">
+        <label>Your name / handle</label>
+        <input id="m_author" placeholder="yourhandle" oninput="build()" />
+      </div>
+      <div class="f">
+        <label>Link <span class="opt">(optional)</span></label>
+        <input id="m_link" placeholder="github.com/you" oninput="build()" />
+      </div>
+    </div>
+
+    <div class="preview" id="m_preview"></div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="copyManifest()" id="m_copy">Copy manifest</button>
+      <button class="btn" onclick="submitGitHub()">Submit on GitHub →</button>
+    </div>
+    <p class="note">Free &amp; account-free beyond your own GitHub. Plugins run with your permissions — keep them transparent and safe.</p>
+  </div>
+</div>
+
 <script>
+  const REPO = 'cursorvoice/community';
+  let DATA = [], filter = 'all';
+
+  // ---- marketplace grid ----
   fetch('registry.json').then(r => r.json()).then(list => {
+    DATA = Array.isArray(list) ? list : [];
+    render();
+  }).catch(() => { document.getElementById('plugins').innerHTML =
+    '<p class="empty">Couldn’t load the registry right now.</p>'; });
+
+  function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  const typeLabel = t => ({open_url:'URL',shell:'SHELL',applescript:'APPLESCRIPT'}[t]||t||'');
+
+  function setFilter(t){
+    filter = t;
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.t===t));
+    render();
+  }
+
+  function render(){
+    const q = (document.getElementById('q').value||'').toLowerCase().trim();
     const el = document.getElementById('plugins');
-    if (!Array.isArray(list) || !list.length) { el.innerHTML = '<p style="color:var(--fg-faint)">No plugins yet — be the first to submit one!</p>'; return; }
-    el.innerHTML = list.map(p => `
+    const items = DATA.filter(p =>
+      (filter==='all' || p.type===filter) &&
+      (!q || (p.name||'').toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q)));
+    if(!items.length){ el.innerHTML = '<p class="empty">'+(DATA.length?'No plugins match that.':'No plugins yet — be the first to submit one!')+'</p>'; return; }
+    el.innerHTML = items.map((p,i) => `
       <div class="card">
-        <span class="type">${(p.type||'').replace(/"/g,'')}</span>
-        <h3>${(p.name||'').replace(/</g,'&lt;')}</h3>
-        <p>${(p.description||'').replace(/</g,'&lt;')}</p>
-        <div class="by">by ${(p.author||'anonymous').replace(/</g,'&lt;')} · <a href="${(p.file||'#').replace(/"/g,'')}" target="_blank" rel="noopener">manifest</a></div>
+        <span class="type">${esc(typeLabel(p.type))}</span>
+        <h3>${esc(p.name)}</h3>
+        <p>${esc(p.description)}</p>
+        <div class="foot">
+          <span class="by">by ${esc(p.author||'anonymous')}</span>
+          <button class="copy" data-file="${esc(p.file)}" onclick="copyPlugin(this)">Copy manifest</button>
+        </div>
       </div>`).join('');
-  }).catch(() => {
-    document.getElementById('plugins').innerHTML = '<p style="color:var(--fg-faint)">Couldn\'t load the registry.</p>';
-  });
+  }
+
+  function copyPlugin(btn){
+    fetch(btn.dataset.file).then(r=>r.text()).then(txt=>{
+      navigator.clipboard.writeText(txt);
+      const o=btn.textContent; btn.textContent='Copied ✓'; btn.classList.add('done');
+      setTimeout(()=>{btn.textContent=o; btn.classList.remove('done');},1600);
+    }).catch(()=>{ btn.textContent='Open on GitHub'; });
+  }
+
+  // ---- submit modal ----
+  const $ = id => document.getElementById(id);
+  function openSubmit(){ $('overlay').classList.add('open'); document.body.style.overflow='hidden'; build(); }
+  function closeSubmit(){ $('overlay').classList.remove('open'); document.body.style.overflow=''; }
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeSubmit(); });
+
+  function slug(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
+
+  function buildManifest(){
+    const name = $('m_name').value.trim();
+    const desc = $('m_desc').value.trim();
+    const type = $('m_type').value;
+    const tpl  = $('m_tpl').value.trim();
+    const args = $('m_args').value.split(',').map(s=>slug(s)).filter(Boolean);
+    const props = {}; args.forEach(a => props[a] = {type:'string'});
+    const manifest = {
+      name: name || 'my plugin',
+      description: desc || 'What this plugin does.',
+      parameters: { type:'object', properties: props, ...(args.length?{required:args}:{}) },
+      run: { type, template: tpl || '' }
+    };
+    return {manifest, name, desc, type, author:$('m_author').value.trim(), link:$('m_link').value.trim()};
+  }
+
+  function build(){
+    const {manifest, name} = buildManifest();
+    $('m_id').textContent = 'plugin_' + (slug(name) || '…');
+    const labels = {open_url:'URL template', shell:'Shell command', applescript:'AppleScript'};
+    $('m_tpl_label').textContent = labels[$('m_type').value];
+    $('m_preview').textContent = JSON.stringify(manifest, null, 2);
+  }
+
+  function copyManifest(){
+    const {manifest} = buildManifest();
+    navigator.clipboard.writeText(JSON.stringify(manifest, null, 2));
+    const b=$('m_copy'), o=b.textContent; b.textContent='Copied ✓';
+    setTimeout(()=>b.textContent=o,1600);
+  }
+
+  function submitGitHub(){
+    const {manifest, name, desc, type, author, link} = buildManifest();
+    if(!name || !desc || !manifest.run.template){
+      alert('Add a name, a description, and the ' + (type==='open_url'?'URL':type) + ' template first.');
+      return;
+    }
+    const body =
+`**Plugin:** ${name}
+**Author:** ${author||'(anonymous)'}
+**Link:** ${link||'—'}
+**Type:** ${type}
+
+Manifest:
+\`\`\`json
+${JSON.stringify(manifest, null, 2)}
+\`\`\`
+
+_Submitted via community.cursorvoice.app — press “Submit new issue” to publish for review._`;
+    const url = `https://github.com/${REPO}/issues/new?title=${encodeURIComponent('[plugin] '+name)}`
+      + `&labels=${encodeURIComponent('plugin-submission')}`
+      + `&body=${encodeURIComponent(body)}`;
+    window.open(url, '_blank', 'noopener');
+  }
 </script>
 </body>
 </html>
