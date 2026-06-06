@@ -1,5 +1,12 @@
 [
   {
+    "name": "codex",
+    "file": "plugins/codex.json",
+    "type": "shell",
+    "description": "Delegate a coding task to the local OpenAI Codex CLI (uses your Codex subscription, not the API key).",
+    "author": "cursorvoice"
+  },
+  {
     "name": "search youtube",
     "file": "plugins/youtube.json",
     "type": "open_url",

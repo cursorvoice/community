@@ -1,0 +1,13 @@
+{
+  "name": "codex",
+  "description": "Delegate a coding task to the local OpenAI Codex CLI — write, refactor, explain code or run a repo task. Uses your Codex/ChatGPT subscription (not the API key). Requires the Codex CLI installed and signed in.",
+  "parameters": {
+    "type": "object",
+    "properties": { "task": { "type": "string", "description": "The full coding task, e.g. 'add type hints to utils.py'" } },
+    "required": ["task"]
+  },
+  "run": {
+    "type": "shell",
+    "template": "command -v codex >/dev/null 2>&1 || { echo 'Codex CLI not found — install it and run: codex login'; exit 0; }; codex exec {{task}}"
+  }
+}
