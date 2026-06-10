@@ -21,7 +21,7 @@ a:hover{text-decoration:underline}
 nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);background:rgba(7,7,11,.55);border-bottom:1px solid var(--border)}
 nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}
 .brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16px;text-decoration:none;color:var(--fg)}
-.brand .mark{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 0deg,var(--violet),var(--pink),var(--sky),var(--mint),var(--violet));box-shadow:0 0 16px rgba(140,76,242,.6);animation:spin 14s linear infinite}
+.brand .mark{width:26px;height:26px;border-radius:50%;background:url('https://cursorvoice.app/assets/orb-logo.png') center/cover no-repeat;box-shadow:0 0 16px rgba(140,76,242,.6)}
 .nav-links{display:flex;gap:24px;align-items:center}
 .nav-links a{color:var(--fg-dim);font-size:14px;transition:color .2s}
 .nav-links a:hover{color:var(--fg);text-decoration:none}
@@ -37,10 +37,11 @@ h1 .grad{background:linear-gradient(110deg,var(--violet),var(--pink),var(--sky),
 
 /* animated orb in hero */
 .orb{width:96px;height:96px;margin:0 auto 30px;border-radius:50%;position:relative;
-  background:conic-gradient(from 0deg,var(--violet),var(--pink),var(--sky),var(--mint),var(--violet));
-  animation:spin 9s linear infinite;box-shadow:0 0 50px rgba(140,76,242,.5),0 0 90px rgba(247,115,199,.3)}
-.orb::before{content:"";position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(255,255,255,.4) 35%,rgba(255,255,255,.05) 70%)}
-.orb::after{content:"";position:absolute;inset:-40%;border-radius:50%;background:inherit;filter:blur(34px);opacity:.45;animation:pulse 4.5s var(--ease) infinite}
+  background:url('https://cursorvoice.app/assets/orb-logo.png') center/cover no-repeat;
+  animation:spin 14s linear infinite;box-shadow:0 0 50px rgba(140,76,242,.5),0 0 90px rgba(247,115,199,.3)}
+.orb::after{content:"";position:absolute;inset:-40%;border-radius:50%;filter:blur(34px);opacity:.45;
+  background:radial-gradient(circle,rgba(140,76,242,.8),rgba(247,115,199,.4) 60%,transparent 80%);
+  animation:pulse 4.5s var(--ease) infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes flow{to{background-position:280% 0}}
 @keyframes pulse{0%,100%{transform:scale(.9);opacity:.35}50%{transform:scale(1.08);opacity:.55}}
